@@ -28,11 +28,13 @@
 
 ---
 
-# ❤️ CardioIA – Fase 1: Batimentos de Dados
-
-## 🎯 Visão geral
+# ❤️ CardioIA – Projeto Integrador
 
 O **CardioIA** é um projeto acadêmico que simula o ecossistema de uma cardiologia moderna, integrando dados clínicos, Machine Learning, Visão Computacional, IoT e agentes inteligentes para triagem, diagnósticos, monitoramento e previsões médicas.
+
+# 📦 Fase 1 – Batimentos de Dados
+
+## 🎯 Visão geral
 
 Nesta **Fase 1 – Batimentos de Dados**, assumimos o papel de cientistas de dados hospitalares: o desafio é levantar, organizar e entender dados cardiológicos que, nas fases seguintes, alimentarão os módulos inteligentes do CardioIA. A entrega contempla três tipos de dados — numéricos, textuais e visuais — com atenção à **governança de dados** e ao **viés**.
 
@@ -235,24 +237,6 @@ https://data.mendeley.com/datasets/gwbz3fsgp8/2
 
 ---
 
-## 📁 Estrutura do repositório
-
-```
-chap01-phase01-cardioia-dataset-foundation/
-├── README.md                    # Visão geral, links e descrição das 3 partes
-├── data/                        # Parte 1 – dados numéricos
-│   ├── heart_disease_cleveland_raw.csv   # Dados brutos (Cleveland)
-│   └── heart_real_cleaned.csv            # Dados limpos (entregável)
-├── docs/                        # Parte 2 – textos .txt para NLP
-├── notebooks/                   # EDA e análise da Parte 1
-│   └── eda_heart_cleveland.ipynb
-└── scripts/                     # Parte 1 – carregamento e limpeza
-    ├── load_dataset.py          # Carrega e inspeciona o CSV bruto
-    └── clean_heart_data.py      # Aplica limpeza e gera heart_real_cleaned.csv
-```
-
----
-
 ## ⚖️ Governança de dados e viés
 
 - **Rastreabilidade:** Parte 1: origem UCI/Cleveland citada; limpeza documentada no notebook de EDA e no script `clean_heart_data.py`. Partes 2 e 3: fontes e links descritos nas seções correspondentes.
@@ -269,3 +253,81 @@ chap01-phase01-cardioia-dataset-foundation/
 
 ---
 
+# 🌐 Fase 3 – IoT na Saúde: Monitoramento Contínuo
+
+## 🎯 Visão geral
+
+Nesta **Fase 3**, o projeto CardioIA avança para a simulação de um sistema vestível de monitoramento cardíaco contínuo, integrando conceitos de **Edge Computing**, **protocolo MQTT**, **armazenamento local** e **dashboards interativos**.
+
+---
+
+## 🔌 Parte 1 – Armazenamento e Processamento Local (Edge Computing)
+
+### Descrição
+
+Protótipo desenvolvido no **Wokwi** com **ESP32**, simulando um dispositivo vestível capaz de capturar sinais vitais, armazenar dados localmente durante períodos offline e sincronizá-los com a nuvem ao reconectar.
+
+### Sensores utilizados
+
+| Componente | Descrição | Pino ESP32 |
+|---|---|---|
+| DHT22 | Temperatura (0–50°C) e umidade (0–100%) | GPIO4 |
+| Push Button | Simulador de batimentos cardíacos (BPM) | GPIO15 |
+
+### Funcionalidades
+
+- Leitura periódica de temperatura, umidade e BPM a cada 2 segundos
+- Buffer circular em RAM com capacidade para 100 amostras (~3min20s offline)
+- Estratégia FIFO para buffer cheio — preserva dados mais recentes
+- Sincronização automática ao reconectar (simulada por variável booleana)
+- Alertas clínicos: temperatura > 38°C, umidade > 90%, BPM > 120
+- Serialização dos dados em formato JSON compatível com MQTT
+
+### 🔗 Links
+
+- **Simulação no Wokwi:** https://wokwi.com/projects/463031226583237633
+- **Código:** [`phase03-cardioia-iot/parte1-edge-computing/sketch.ino`](./phase03-cardioia-iot/parte1-edge-computing/sketch.ino)
+- **Diagrama:** [`phase03-cardioia-iot/parte1-edge-computing/diagram.json`](./phase03-cardioia-iot/parte1-edge-computing/diagram.json)
+- **Relatório:** [`phase03-cardioia-iot/parte1-edge-computing/relatorio-parte1.pdf`](./phase03-cardioia-iot/parte1-edge-computing/relatorio-parte1.pdf)
+
+---
+
+## 📡 Parte 2 – Transmissão para Nuvem e Visualização (em desenvolvimento)
+
+> Conteúdo a ser adicionado após conclusão da Parte 2.
+
+---
+
+## 📁 Estrutura atualizada do repositório
+
+```
+chap01-phase01-cardioia-dataset-foundation/
+├── README.md
+├── assets/img/
+├── data/                        # Fase 1 – Parte 1: dados numéricos
+│   ├── heart_disease_cleveland_raw.csv
+│   └── heart_real_cleaned.csv
+├── docs/                        # Fase 1 – Parte 2: textos NLP
+├── notebooks/                   # Fase 1 – EDA
+│   └── eda_heart_cleveland.ipynb
+├── scripts/                     # Fase 1 – scripts de limpeza
+│   ├── load_dataset.py
+│   └── clean_heart_data.py
+├── requirements.txt
+├── .gitignore
+└── phase03-cardioia-iot/        # Fase 3 – IoT na Saúde
+    ├── parte1-edge-computing/
+    │   ├── sketch.ino
+    │   ├── diagram.json
+    │   └── relatorio-parte1.pdf
+    └── parte2-mqtt-dashboard/   # em desenvolvimento
+```
+
+### 🛠 Tecnologias utilizadas (Fase 3)
+
+- **Hardware simulado:** ESP32 (Wokwi)
+- **Sensores:** DHT22, Push Button
+- **Linguagem:** C++ (Arduino)
+- **Protocolos:** MQTT (Parte 2)
+- **Visualização:** Node-RED, Grafana (Parte 2)
+- **Conceitos:** Edge Computing, Fog Computing, Cloud Computing
