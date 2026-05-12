@@ -292,9 +292,78 @@ Protótipo desenvolvido no **Wokwi** com **ESP32**, simulando um dispositivo ves
 
 ---
 
-## 📡 Parte 2 – Transmissão para Nuvem e Visualização (em desenvolvimento)
+## 📡 Parte 2 – Transmissão para Nuvem e Visualização (Fog/Cloud Computing)
 
-> Conteúdo a ser adicionado após conclusão da Parte 2.
+### Descrição
+
+Evolução da Parte 1 para um fluxo real de comunicação MQTT, conectando o **ESP32 no Wokwi** ao **HiveMQ Cloud** e consumindo os dados no **Node-RED Dashboard**. A solução demonstra o ciclo completo de monitoramento em IoT aplicado à saúde:
+
+```text
+ESP32/Wokwi → HiveMQ Cloud → Node-RED → Dashboard
+```
+
+### Fluxo MQTT
+
+- O ESP32 publica dados simulados de sinais vitais no tópico `cardioia/paciente01/vitals`
+- O payload é enviado em JSON com `deviceId`, `ts`, `temp`, `umid`, `bpm` e `alerta`
+- O HiveMQ Cloud atua como broker MQTT em nuvem, usando porta `8883` com TLS
+- O Node-RED assina o tópico, converte o JSON e alimenta os widgets do dashboard
+- A resiliência offline da Parte 1 foi preservada: quando a conectividade lógica está indisponível, as amostras ficam no buffer circular e são sincronizadas ao reconectar
+
+### Dashboard Node-RED
+
+O dashboard exibe em tempo real:
+
+- **Gráfico de BPM:** evolução dos batimentos cardíacos
+- **Gauge de temperatura:** faixa de 20 a 45°C, com alerta visual a partir de 38°C
+- **Gauge de umidade:** faixa de 0 a 100%, com alerta visual a partir de 90%
+- **Status clínico:** texto indicando condição normal ou alerta clínico
+
+### Segurança e configuração
+
+Por segurança, o código e o export do Node-RED usam placeholders para host, usuário e senha do HiveMQ. Para reproduzir o projeto, substitua os valores `SEU_CLUSTER_HIVEMQ`, `SEU_USUARIO_MQTT` e `SUA_SENHA_MQTT` pelas credenciais do cluster criado no HiveMQ Cloud.
+
+### 🔗 Links
+
+- **Simulação no Wokwi:** https://wokwi.com/projects/463766539506825217
+- **Código ESP32:** [`phase03-cardioia-iot/parte2-mqtt-dashboard/sketch.ino`](./phase03-cardioia-iot/parte2-mqtt-dashboard/sketch.ino)
+- **Export Node-RED:** [`phase03-cardioia-iot/parte2-mqtt-dashboard/node-red/flow-cardioia-dashboard.json`](./phase03-cardioia-iot/parte2-mqtt-dashboard/node-red/flow-cardioia-dashboard.json)
+- **Relatório:** [`phase03-cardioia-iot/parte2-mqtt-dashboard/docs/relatorio-parte2.pdf`](./phase03-cardioia-iot/parte2-mqtt-dashboard/docs/relatorio-parte2.pdf)
+- **Dashboard:** [`phase03-cardioia-iot/parte2-mqtt-dashboard/assets/dashboard.png`](./phase03-cardioia-iot/parte2-mqtt-dashboard/assets/dashboard.png)
+- **Fluxo Node-RED:** [`phase03-cardioia-iot/parte2-mqtt-dashboard/assets/node-red-workflow.png`](./phase03-cardioia-iot/parte2-mqtt-dashboard/assets/node-red-workflow.png)
+- **Wokwi/Serial MQTT:** [`phase03-cardioia-iot/parte2-mqtt-dashboard/assets/wokwi.png`](./phase03-cardioia-iot/parte2-mqtt-dashboard/assets/wokwi.png)
+
+### ▶️ Como executar a Fase 3 – Parte 2
+
+1. **Criar/configurar o broker MQTT no HiveMQ Cloud**
+   - Criar um cluster Serverless no HiveMQ Cloud.
+   - Criar uma credencial MQTT com permissão **Publish only** para o ESP32.
+   - Criar uma credencial MQTT com permissão **Subscribe only** para o Node-RED.
+   - Anotar o host do cluster, usuário e senha das credenciais.
+
+2. **Configurar e rodar o ESP32 no Wokwi**
+   - Abrir a simulação: https://wokwi.com/projects/463766539506825217
+   - Garantir que as bibliotecas `DHT sensor library` e `PubSubClient` estejam adicionadas no Wokwi.
+   - No `sketch.ino`, substituir os placeholders:
+     - `SEU_CLUSTER_HIVEMQ.s1.eu.hivemq.cloud`
+     - `SEU_USUARIO_MQTT`
+     - `SUA_SENHA_MQTT`
+   - Iniciar a simulação e acompanhar o Monitor Serial.
+   - O fluxo esperado é: início offline, armazenamento em buffer, conexão MQTT e publicação das amostras no HiveMQ.
+
+3. **Configurar o Node-RED**
+   - Instalar/abrir o Node-RED localmente.
+   - Instalar o pacote `@flowfuse/node-red-dashboard` em **Manage palette**.
+   - Importar o flow [`flow-cardioia-dashboard.json`](./phase03-cardioia-iot/parte2-mqtt-dashboard/node-red/flow-cardioia-dashboard.json).
+   - No node de broker MQTT, substituir o host placeholder pelo host real do HiveMQ.
+   - Configurar usuário e senha da credencial **Subscribe only**.
+   - Manter TLS habilitado na porta `8883`.
+   - Clicar em **Deploy**.
+
+4. **Visualizar o dashboard**
+   - Abrir `http://127.0.0.1:1880/dashboard/page1`.
+   - Rodar a simulação no Wokwi.
+   - Verificar os gauges de temperatura/umidade, o gráfico de BPM e o status clínico.
 
 ---
 
@@ -320,7 +389,17 @@ chap01-phase01-cardioia-dataset-foundation/
     │   ├── sketch.ino
     │   ├── diagram.json
     │   └── relatorio-parte1.pdf
-    └── parte2-mqtt-dashboard/   # em desenvolvimento
+    └── parte2-mqtt-dashboard/
+        ├── sketch.ino
+        ├── assets/
+        │   ├── dashboard.png
+        │   ├── node-red-workflow.png
+        │   └── wokwi.png
+        ├── docs/
+        │   ├── relatorio-parte2.md
+        │   └── relatorio-parte2.pdf
+        └── node-red/
+            └── flow-cardioia-dashboard.json
 ```
 
 ### 🛠 Tecnologias utilizadas (Fase 3)
@@ -328,6 +407,6 @@ chap01-phase01-cardioia-dataset-foundation/
 - **Hardware simulado:** ESP32 (Wokwi)
 - **Sensores:** DHT22, Push Button
 - **Linguagem:** C++ (Arduino)
-- **Protocolos:** MQTT (Parte 2)
-- **Visualização:** Node-RED, Grafana (Parte 2)
+- **Protocolos:** MQTT com HiveMQ Cloud
+- **Visualização:** Node-RED Dashboard
 - **Conceitos:** Edge Computing, Fog Computing, Cloud Computing

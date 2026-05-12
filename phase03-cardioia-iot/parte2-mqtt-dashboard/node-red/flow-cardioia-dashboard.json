@@ -1,0 +1,467 @@
+[
+  {
+    "id": "71e58f0d0c6646eb",
+    "type": "tab",
+    "label": "Coleta e Monitoramento de Dados Cardiacos",
+    "disabled": false,
+    "info": "",
+    "env": []
+  },
+  {
+    "id": "bc7cddd6f20989f3",
+    "type": "mqtt in",
+    "z": "71e58f0d0c6646eb",
+    "name": "HiveMQ - sinais vitais",
+    "topic": "cardioia/paciente01/vitals",
+    "qos": "0",
+    "datatype": "auto-detect",
+    "broker": "ef9089d47b45e0bd",
+    "nl": false,
+    "rap": true,
+    "rh": 0,
+    "inputs": 0,
+    "x": 210,
+    "y": 220,
+    "wires": [
+      [
+        "eebdf7822a73314c"
+      ]
+    ]
+  },
+  {
+    "id": "eebdf7822a73314c",
+    "type": "json",
+    "z": "71e58f0d0c6646eb",
+    "name": "Converter JSON",
+    "property": "payload",
+    "action": "",
+    "pretty": false,
+    "x": 410,
+    "y": 220,
+    "wires": [
+      [
+        "c92dc8bac3dc76e0",
+        "1edf056a4f5d1039",
+        "556db9a280487fb3",
+        "c70b5f5e0331f4ea"
+      ]
+    ]
+  },
+  {
+    "id": "c92dc8bac3dc76e0",
+    "type": "function",
+    "z": "71e58f0d0c6646eb",
+    "name": "Extrair BPM",
+    "func": "let data = msg.payload;\n\nif (typeof data === \"string\") {\n    data = JSON.parse(data);\n}\n\nmsg.payload = Number(data.bpm);\nmsg.topic = \"BPM\";\n\nreturn msg;",
+    "outputs": 1,
+    "timeout": 0,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 610,
+    "y": 180,
+    "wires": [
+      [
+        "a71e2dda1a50de96"
+      ]
+    ]
+  },
+  {
+    "id": "1edf056a4f5d1039",
+    "type": "function",
+    "z": "71e58f0d0c6646eb",
+    "name": "Extrair Temperatura",
+    "func": "let data = msg.payload;\n\nif (typeof data === \"string\") {\n    data = JSON.parse(data);\n}\n\nmsg.payload = Number(data.temp);\nreturn msg;",
+    "outputs": 1,
+    "timeout": 0,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 630,
+    "y": 220,
+    "wires": [
+      [
+        "1bbc586aef09ca9d"
+      ]
+    ]
+  },
+  {
+    "id": "c70b5f5e0331f4ea",
+    "type": "function",
+    "z": "71e58f0d0c6646eb",
+    "name": "Extrair Umidade",
+    "func": "let data = msg.payload;\n\nif (typeof data === \"string\") {\n    data = JSON.parse(data);\n}\n\nmsg.payload = Number(data.umid);\nreturn msg;",
+    "outputs": 1,
+    "timeout": 0,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 620,
+    "y": 260,
+    "wires": [
+      [
+        "732ac23716f44df8"
+      ]
+    ]
+  },
+  {
+    "id": "556db9a280487fb3",
+    "type": "function",
+    "z": "71e58f0d0c6646eb",
+    "name": "Formatar Alerta",
+    "func": "let data = msg.payload;\n\nif (typeof data === \"string\") {\n    data = JSON.parse(data);\n}\n\nmsg.payload = data.alerta\n    ? \"ALERTA CLÍNICO: limite excedido\"\n    : \"Paciente em condição normal\";\n\nreturn msg;",
+    "outputs": 1,
+    "timeout": 0,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 620,
+    "y": 300,
+    "wires": [
+      [
+        "dc06829f573f9b85"
+      ]
+    ]
+  },
+  {
+    "id": "a71e2dda1a50de96",
+    "type": "ui-chart",
+    "z": "71e58f0d0c6646eb",
+    "group": "54d12cc039f5fa05",
+    "name": "Gráfico BPM",
+    "label": "Batimentos cardíacos (BPM)",
+    "order": 4,
+    "chartType": "line",
+    "category": "topic",
+    "categoryType": "msg",
+    "xAxisLabel": "time",
+    "xAxisProperty": "",
+    "xAxisPropertyType": "timestamp",
+    "xAxisType": "time",
+    "xAxisFormat": "",
+    "xAxisFormatType": "auto",
+    "xmin": "",
+    "xmax": "",
+    "yAxisLabel": "",
+    "yAxisProperty": "payload",
+    "yAxisPropertyType": "msg",
+    "ymin": "0",
+    "ymax": "180",
+    "bins": 10,
+    "action": "append",
+    "stackSeries": false,
+    "pointShape": "circle",
+    "pointRadius": 4,
+    "showLegend": true,
+    "removeOlder": 1,
+    "removeOlderUnit": "3600",
+    "removeOlderPoints": "",
+    "colors": [
+      "#0095ff",
+      "#ff0000",
+      "#ff7f0e",
+      "#2ca02c",
+      "#a347e1",
+      "#d62728",
+      "#ff9896",
+      "#9467bd",
+      "#c5b0d5"
+    ],
+    "textColor": [
+      "#666666"
+    ],
+    "textColorDefault": true,
+    "gridColor": [
+      "#e5e5e5"
+    ],
+    "gridColorDefault": true,
+    "width": 6,
+    "height": 8,
+    "className": "",
+    "interpolation": "linear",
+    "x": 890,
+    "y": 180,
+    "wires": [
+      []
+    ]
+  },
+  {
+    "id": "1bbc586aef09ca9d",
+    "type": "ui-gauge",
+    "z": "71e58f0d0c6646eb",
+    "name": "Gauge Temperatura",
+    "group": "54d12cc039f5fa05",
+    "order": 2,
+    "value": "payload",
+    "valueType": "msg",
+    "width": 3,
+    "height": 3,
+    "gtype": "gauge-half",
+    "gstyle": "needle",
+    "title": "Temperatura",
+    "alwaysShowTitle": false,
+    "floatingTitlePosition": "top-left",
+    "units": "Celsius (°C)",
+    "icon": "",
+    "prefix": "",
+    "suffix": "",
+    "segments": [
+      {
+        "from": "20",
+        "color": "#5cd65c",
+        "text": "",
+        "textType": "value"
+      },
+      {
+        "from": "38",
+        "color": "#ffc800",
+        "text": "",
+        "textType": "value"
+      },
+      {
+        "from": "39",
+        "color": "#ea5353",
+        "text": "",
+        "textType": "value"
+      }
+    ],
+    "min": "20",
+    "max": "45",
+    "sizeThickness": 16,
+    "sizeGap": 4,
+    "sizeKeyThickness": 8,
+    "styleRounded": true,
+    "styleGlow": false,
+    "className": "",
+    "x": 860,
+    "y": 220,
+    "wires": [
+      []
+    ]
+  },
+  {
+    "id": "732ac23716f44df8",
+    "type": "ui-gauge",
+    "z": "71e58f0d0c6646eb",
+    "name": "Gauge Umidade",
+    "group": "54d12cc039f5fa05",
+    "order": 1,
+    "value": "payload",
+    "valueType": "msg",
+    "width": 3,
+    "height": 3,
+    "gtype": "gauge-half",
+    "gstyle": "needle",
+    "title": "Umidade",
+    "alwaysShowTitle": false,
+    "floatingTitlePosition": "top-left",
+    "units": "%",
+    "icon": "",
+    "prefix": "",
+    "suffix": "",
+    "segments": [
+      {
+        "from": "0",
+        "color": "#5cd65c",
+        "text": "",
+        "textType": "value"
+      },
+      {
+        "from": "80",
+        "color": "#ffc800",
+        "text": "",
+        "textType": "value"
+      },
+      {
+        "from": "90",
+        "color": "#ea5353",
+        "text": "",
+        "textType": "value"
+      }
+    ],
+    "min": "0",
+    "max": "100",
+    "sizeThickness": 16,
+    "sizeGap": 4,
+    "sizeKeyThickness": 8,
+    "styleRounded": true,
+    "styleGlow": false,
+    "className": "",
+    "x": 840,
+    "y": 260,
+    "wires": [
+      []
+    ]
+  },
+  {
+    "id": "dc06829f573f9b85",
+    "type": "ui-text",
+    "z": "71e58f0d0c6646eb",
+    "group": "54d12cc039f5fa05",
+    "order": 3,
+    "width": 0,
+    "height": 0,
+    "name": "Status Alerta",
+    "label": "Status clínico",
+    "format": "{{msg.payload}}",
+    "layout": "row-spread",
+    "style": false,
+    "font": "",
+    "fontSize": 16,
+    "color": "#717171",
+    "wrapText": false,
+    "className": "",
+    "value": "payload",
+    "valueType": "msg",
+    "x": 850,
+    "y": 300,
+    "wires": []
+  },
+  {
+    "id": "ef9089d47b45e0bd",
+    "type": "mqtt-broker",
+    "name": "HiveMQ CardioIA",
+    "broker": "SEU_CLUSTER_HIVEMQ.s1.eu.hivemq.cloud",
+    "port": "8883",
+    "tls": "9f377d295cf63fcf",
+    "clientid": "cardioia-nodered-01",
+    "autoConnect": true,
+    "usetls": true,
+    "protocolVersion": 4,
+    "keepalive": 60,
+    "cleansession": true,
+    "autoUnsubscribe": true,
+    "birthTopic": "",
+    "birthQos": "0",
+    "birthRetain": "false",
+    "birthPayload": "",
+    "birthMsg": {},
+    "closeTopic": "",
+    "closeQos": "0",
+    "closeRetain": "false",
+    "closePayload": "",
+    "closeMsg": {},
+    "willTopic": "",
+    "willQos": "0",
+    "willRetain": "false",
+    "willPayload": "",
+    "willMsg": {},
+    "userProps": "",
+    "sessionExpiry": ""
+  },
+  {
+    "id": "9f377d295cf63fcf",
+    "type": "tls-config",
+    "name": "HiveMQ TLS",
+    "cert": "",
+    "key": "",
+    "ca": "",
+    "certname": "",
+    "keyname": "",
+    "caname": "",
+    "servername": "SEU_CLUSTER_HIVEMQ.s1.eu.hivemq.cloud",
+    "verifyservercert": true,
+    "alpnprotocol": ""
+  },
+  {
+    "id": "54d12cc039f5fa05",
+    "type": "ui-group",
+    "name": "Monitoramento em Tempo Real",
+    "page": "66be36677f0fe362",
+    "width": 6,
+    "height": 1,
+    "order": 1,
+    "showTitle": true,
+    "className": "",
+    "visible": "true",
+    "disabled": "false",
+    "groupType": "default"
+  },
+  {
+    "id": "66be36677f0fe362",
+    "type": "ui-page",
+    "name": "CardioIA",
+    "ui": "aa5e839677756321",
+    "path": "/page1",
+    "icon": "home",
+    "layout": "grid",
+    "theme": "c989ef77a977bcfe",
+    "breakpoints": [
+      {
+        "name": "Default",
+        "px": "0",
+        "cols": "3"
+      },
+      {
+        "name": "Tablet",
+        "px": "576",
+        "cols": "6"
+      },
+      {
+        "name": "Small Desktop",
+        "px": "768",
+        "cols": "9"
+      },
+      {
+        "name": "Desktop",
+        "px": "1024",
+        "cols": "12"
+      }
+    ],
+    "order": 1,
+    "className": "",
+    "visible": "true",
+    "disabled": "false"
+  },
+  {
+    "id": "aa5e839677756321",
+    "type": "ui-base",
+    "name": "CardioIA Dashboard",
+    "path": "/dashboard",
+    "appIcon": "",
+    "includeClientData": true,
+    "acceptsClientConfig": [
+      "ui-notification",
+      "ui-control"
+    ],
+    "showPathInSidebar": false,
+    "headerContent": "page",
+    "navigationStyle": "default",
+    "titleBarStyle": "default",
+    "showReconnectNotification": true,
+    "notificationDisplayTime": 1,
+    "showDisconnectNotification": true,
+    "allowInstall": false
+  },
+  {
+    "id": "c989ef77a977bcfe",
+    "type": "ui-theme",
+    "name": "Default Theme",
+    "colors": {
+      "surface": "#ffffff",
+      "primary": "#0094CE",
+      "bgPage": "#eeeeee",
+      "groupBg": "#ffffff",
+      "groupOutline": "#cccccc"
+    },
+    "sizes": {
+      "density": "default",
+      "pagePadding": "12px",
+      "groupGap": "12px",
+      "groupBorderRadius": "4px",
+      "widgetGap": "12px"
+    }
+  },
+  {
+    "id": "5c6c9335872d2e64",
+    "type": "global-config",
+    "env": [],
+    "modules": {
+      "@flowfuse/node-red-dashboard": "1.30.2"
+    }
+  }
+]
